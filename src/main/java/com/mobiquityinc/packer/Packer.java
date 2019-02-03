@@ -3,23 +3,22 @@
  */
 package com.mobiquityinc.packer;
 
-import com.mobiquityinc.packer.domain.Thing;
 import com.mobiquityinc.packer.exception.APIException;
+import com.mobiquityinc.packer.exception.ParseException;
+import com.mobiquityinc.packer.exception.ReadException;
+import com.mobiquityinc.packer.parser.CommonFormatParser;
+import com.mobiquityinc.packer.service.PackerReader;
+import com.mobiquityinc.packer.service.PackerReaderFactoryProducer;
 
-import java.io.BufferedReader;
-import java.io.FileReader;
-import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.List;
 import java.util.stream.Collectors;
 
 public class Packer {
 
     public static final String ZERO_FOUND = "-";
+    static final String DELIMITER = ",";
 
     public static void main(String[] args) throws APIException {
         System.out.println(pack("C:\\temp.txt"));
@@ -32,27 +31,12 @@ public class Packer {
         if (!Files.exists(path) || !Files.isReadable(path)) {
             throw new APIException("File does not exist or is not readable");
         }
-        List<String> results = new ArrayList<>();
+        PackerReader reader = PackerReaderFactoryProducer.getFactory(path.toFile()).getReader();
         try {
-            try (BufferedReader br = new BufferedReader(new FileReader(path.toFile()))) {
-                String line;
-                while ((line = br.readLine()) != null) {
-                    LineParser lineParser = new LineParser(line);
-                    lineParser.parse();
-                    if (lineParser.getThings().size() == 0) {
-                        throw new APIException("Number of things has to be more that 0");
-                    }
-                    List<Thing> s = PackerSolver.solve(lineParser.getThings(), lineParser.getOverallWeight());
-                    results.add(s.size() == 0 ? ZERO_FOUND : s.stream().sorted(Comparator.comparingInt(Thing::getIndex))
-                            .map(thing -> String.valueOf(thing.getIndex()))
-                            .collect(Collectors.joining(",")));
-                }
-            }
-        } catch (IOException e) {
-            throw new APIException("An error occurred during reading the file", e);
+            return reader.getResult(new CommonFormatParser(), Collectors.joining(DELIMITER), Collectors.joining(System.getProperty("line.separator")));
+        } catch (ParseException | ReadException e) {
+            throw new APIException(e.getMessage());
         }
-        return results.stream().collect(Collectors.joining(System.getProperty("line.separator")));
-
     }
 
 }

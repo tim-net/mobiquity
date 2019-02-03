@@ -3,12 +3,46 @@
  */
 package com.mobiquityinc.packer;
 
+import com.mobiquityinc.packer.exception.APIException;
 import org.junit.Test;
+
 import static org.junit.Assert.*;
 
 public class PackerTest {
-    @Test public void testSomeLibraryMethod() {
-        Packer classUnderTest = new Packer();
-        assertTrue("someLibraryMethod should return 'true'", classUnderTest.someLibraryMethod());
+    @Test(expected = APIException.class)
+    public void testPackFromNonexistentFile() throws APIException {
+        String path = "src/test/resources/noTestFile.txt";
+        Packer.pack(path);
     }
+
+    @Test(expected = APIException.class)
+    public void testPackFromWrongFormatFile1() throws APIException {
+        String path = "src/test/resources/badTestFile1.txt";
+        Packer.pack(path);
+    }
+
+    @Test(expected = APIException.class)
+    public void testPackFromWrongFormatFile2() throws APIException {
+        String path = "src/test/resources/badTestFile2.txt";
+        Packer.pack(path);
+    }
+
+    @Test(expected = APIException.class)
+    public void testPackFromWrongFormatFile3() throws APIException {
+        String path = "src/test/resources/badTestFile3.txt";
+        Packer.pack(path);
+    }
+
+    @Test
+    public void testPackFormatFile() throws APIException {
+        String path = "src/test/resources/testFile.txt";
+        String result = Packer.pack(path);
+        String[] lines = result.split(System.getProperty("line.separator"));
+        assertEquals("4", lines[0]);
+        assertEquals(Packer.ZERO_FOUND, lines[1]);
+        assertEquals("2" + Packer.DELIMITER + "7", lines[2]);
+        assertEquals("8" + Packer.DELIMITER + "9", lines[3]);
+    }
+
+
 }

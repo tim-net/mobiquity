@@ -1,4 +1,4 @@
-package com.mobiquityinc.packer;
+package com.mobiquityinc.packer.service;
 
 import com.mobiquityinc.packer.domain.Thing;
 import lombok.AccessLevel;
@@ -8,9 +8,20 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 
+/**
+ * Utility class to solve a problem.
+ */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 class PackerSolver {
 
+    /**
+     * Solves a problem using dynamic programming.
+     *
+     * @param things        input list of all things
+     * @param maximumWeight maximal weight possible
+     * @return list of things which correspond to higher cost possible and
+     * which sum of weights does not exceed possible weight
+     */
     static List<Thing> solve(final List<Thing> things, final Integer maximumWeight) {
 
         things.sort(Comparator.comparingDouble(Thing::getWeight));
@@ -21,12 +32,11 @@ class PackerSolver {
         int[][] matrix = new int[numberOfThings + 1][maximumWeight * 100 + 1];
 
 
-        int minWeight = (int) things.stream().min(Comparator.comparingDouble(Thing::getWeight)).get().getWeight().doubleValue()*100;
+        int minWeight = (int) things.stream().min(Comparator.comparingDouble(Thing::getWeight)).get().getWeight().doubleValue() * 100;
 
         // first line is initialized to 0
         for (int i = minWeight; i <= maximumWeight * 100; i++) {
             matrix[0][i] = 0;
-
         }
 
         // we iterate on things

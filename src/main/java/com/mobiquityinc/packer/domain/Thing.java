@@ -12,8 +12,8 @@ public class Thing {
     @NonNull
     private final Integer index;
     @NonNull
-    private final Double weight;
+    private final Float weight;
     @NonNull
-    private final Double cost;
+    private final Float cost;
 
 }
