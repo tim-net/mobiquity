@@ -20,11 +20,6 @@ public class Packer {
     public static final String ZERO_FOUND = "-";
     static final String DELIMITER = ",";
 
-    public static void main(String[] args) throws APIException {
-        System.out.println(pack("C:\\temp.txt"));
-    }
-
-
     public static String pack(String filePath) throws APIException {
 
         Path path = Paths.get(filePath);
